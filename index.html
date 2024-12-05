@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <style>
+        /* Add CSS styling here */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            border: 1px solid #000;
+            padding: 20px;
+            border-radius: 10px;
+            /* background-color: rgb(32, 31, 31); */
+            background: linear-gradient(rgb(12, 53, 12),rgb(66, 63, 63),rgb(12, 53, 12));
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: snow;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .header .hi {
+            font-size: x-large;
+            text-transform: uppercase;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .header .time {
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: snow;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #000;
+        }
+
+        .calculator-display {
+            width: 100%;
+            height: 50px;
+            margin-bottom: 10px;
+            font-size: 24px;
+            text-align: right;
+            padding-right: 10px;
+            box-sizing: border-box;
+            background-color: snow;
+        }
+
+        .calculator-buttons button {
+            width: 50px;
+            height: 50px;
+            margin: 10px;
+            margin-left: 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            background-color: grey;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            /* background-color: rgb(16, 37, 37); */
+        } 
+        
+      .my-button button{
+      width: 50px;
+      height:35px;
+      margin: 5px;
+      font-size: 12px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      background-color: #000;
+      color: #fff;
+      }
+
+      .my-button{
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+      }
+      .on-off-buttons button{
+        width: 50px;
+        height: 40px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        color: #fff;
+      }
+      .on-off-buttons{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        margin-top: 20px;
+      }
+</style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="header">
+            <div class="hi">Cosio</div>
+            <div class="time">
+                <!-- Time will display here -->
+            </div> 
+        </div>
+        <input type="text" class="calculator-display" id="display" disabled>
+        <div class="on-off-buttons">
+            <button style="background-color: green;" onclick="turnOn()">ON</button>
+            <button style="background-color: red;" onclick="turnOff()">OFF</button>
+        </div>
+        <div class="my-button">
+            <button>CALC</button>
+            <button>ab/c</button>
+            <button onclick="calculateSquare()">x²</button>
+            <button onclick="calculatePower()">^</button>
+            <button onclick="calculateLog()">log</button>
+            <button onclick="calculateConstants('PI')">CONST (π)</button>
+            <button>.-)</button>
+            <button onclick="calculateConstants('E')">CONST (e)</button>
+            <button onclick="calculateHypotenuse()">hyp</button>
+            <button onclick="calculateSin()">sin</button>
+            <button onclick="calculateCos()">cos</button>
+            <button onclick="calculateTan()">tan</button>
+            <button>RCL</button>
+            <button>ENG</button>
+            <button>(</button>
+            <button>)</button>
+            <button>,</button>
+            <button>M+</button>
+          </div>
+        <div class="calculator-buttons">
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button onclick="chooseOperation('+')">+</button>
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button onclick="chooseOperation('-')">-</button>
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button onclick="chooseOperation('*')">*</button>
+            <button onclick="appendNumber('0')">0</button>
+            <button style="background-color: brown;" onclick="clearDisplay()">DEL</button>
+            <button onclick="calculateResult()">=</button>
+            <button onclick="chooseOperation('/')">/</button>
+            <button onclick="chooseOperation('EXP')">EXP</button>
+            <button onclick="appendNumber('.')">.</button>
+            <button onclick="calculateResult('ANS')">ANS</button>
+            <button onclick="clearDisplay()">AC</button>
+        </div>
+    </div>
+
+    <script>
+        // Calculator functionality
+        let display = document.getElementById('display');
+        let currentOperand = '';
+        let previousOperand = '';
+        let operation = undefined;
+        let calculatorOn = false; // State to track if calculator is on
+        
+
+        function turnOn() {
+            calculatorOn = true;
+            updateState();
+        }
+
+        function turnOff() {
+            calculatorOn = false;
+            clearDisplay();
+            updateState();
+        }
+
+        function updateState() {
+            // Enable or disable buttons and display based on state
+            const buttons = document.querySelectorAll('.calculator-buttons button');
+            buttons.forEach(button => {
+                button.disabled = !calculatorOn;
+            });
+            display.disabled = !calculatorOn;
+
+            if (calculatorOn) {
+                display.placeholder = "0";
+            } else {
+                display.placeholder = " ";
+            }
+        }
+
+        function appendNumber(number) {
+            currentOperand += number;
+            updateDisplay();
+        }
+
+        function chooseOperation(op) {
+            if (currentOperand === '') return;
+            if (previousOperand !== '') {
+                calculateResult();
+            }
+            operation = op;
+            previousOperand = currentOperand;
+            currentOperand = '';
+        }
+
+        function calculateResult() {
+            let result;
+            const prev = parseFloat(previousOperand);
+            const current = parseFloat(currentOperand);
+
+            if (isNaN(prev) || isNaN(current)) return;
+
+            switch (operation) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            currentOperand = result;
+            operation = undefined;
+            previousOperand = '';
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentOperand = '';
+            previousOperand = '';
+            operation = undefined;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            display.value = currentOperand;
+        }
+
+        // Functions for advanced operations
+    function calculateSquare() {
+        if (currentOperand !== '') {
+            currentOperand = Math.pow(parseFloat(currentOperand), 2);
+            updateDisplay();
+        }
+    }
+
+    function calculatePower() {
+        if (currentOperand !== '' && previousOperand !== '') {
+            currentOperand = Math.pow(parseFloat(previousOperand), parseFloat(currentOperand));
+            updateDisplay();
+        }
+    }
+
+    function calculateLog() {
+        if (currentOperand !== '') {
+            currentOperand = Math.log10(parseFloat(currentOperand));
+            updateDisplay();
+        }
+    }
+
+    function calculateSin() {
+        if (currentOperand !== '') {
+            currentOperand = Math.sin(parseFloat(currentOperand) * (Math.PI / 180)); // Convert to radians
+            updateDisplay();
+        }
+    }
+
+    function calculateCos() {
+        if (currentOperand !== '') {
+            currentOperand = Math.cos(parseFloat(currentOperand) * (Math.PI / 180)); // Convert to radians
+            updateDisplay();
+        }
+    }
+
+    function calculateTan() {
+        if (currentOperand !== '') {
+            currentOperand = Math.tan(parseFloat(currentOperand) * (Math.PI / 180)); // Convert to radians
+            updateDisplay();
+        }
+    }
+
+    function calculateHypotenuse() {
+        // Example for hypotenuse calculation assuming two operands
+        if (previousOperand !== '' && currentOperand !== '') {
+            const a = parseFloat(previousOperand);
+            const b = parseFloat(currentOperand);
+            currentOperand = Math.sqrt(a * a + b * b);
+            updateDisplay();
+        }
+    }
+
+    function calculateConstants(constant) {
+        switch (constant) {
+            case 'PI':
+                currentOperand = Math.PI;
+                break;
+            case 'E':
+                currentOperand = Math.E;
+                break;
+        }
+        updateDisplay();
+    }
+
+// Time functionality
+function updateTime() {
+    const timeElement = document.querySelector('.time');
+    const now = new Date();
+    
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12; // Convert to 12-hour format, with 12 instead of 0
+    
+    // Use template literals to set the time
+    timeElement.textContent = `${hours}:${minutes} ${amPm}`;
+}
+
+  setInterval(updateTime, 1000);
+  updateTime(); // Initialize time immediately
+
+        // Initialize OFF state
+        turnOff();
+</script>
+  
+</body>
+</html>
